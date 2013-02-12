@@ -1,0 +1,24 @@
+####################################################################################################
+def MetadataObjectForURL(url):
+    return VideoClipObject(
+		title = "USTVnow"
+	)
+
+####################################################################################################
+def MediaObjectsForURL(url):
+    return [
+		MediaObject(
+			container = Container.MP4,
+			video_codec = VideoCodec.H264,
+			audio_codec = AudioCodec.AAC,
+			audio_channels = 2,
+			parts = [PartObject(key=Callback(PlayVideo, url=url))]
+		)
+	]
+
+####################################################################################################
+@indirect
+def PlayVideo(url):
+    sid = url.split("?")[1].split("=")[1]
+    swf_url = "http://www.ustvnow.com/player/flowplayer.commercial-3.2.15.swf?sid="
+    return IndirectResponse(VideoClipObject, key=RTMPVideoURL(url=url, swf_url=swf_url + sid, args=[False]))
