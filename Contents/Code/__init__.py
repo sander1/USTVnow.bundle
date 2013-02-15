@@ -20,10 +20,10 @@ def Start():
 	DirectoryObject.thumb = R(ICON)
 	DirectoryObject.art = R(ART)
 
-	Login()
 
 ####################################################################################################
 def MainMenu():
+	Login()
 
 	oc = ObjectContainer()
 	oc.add(DirectoryObject(key = Callback(GetChannels), title = 'Live'))
@@ -32,8 +32,11 @@ def MainMenu():
 	return oc
 
 ####################################################################################################
+@route('/video/ustvnow/getchannels')
 def GetChannels():
 	oc = ObjectContainer()
+
+	if "token" not in Dict: Login()
 
 	channel_url = BASE_URL + "/iphone_ajax?tab=iphone_playingnow&token=" + Dict['token']
 	response = HTTP.Request(channel_url, cacheTime=0).content
@@ -44,13 +47,12 @@ def GetChannels():
                                    '<\/a>(.+?)<\/td>.+?href="(.+?)"',
                                    response, re.DOTALL):
 		name, icon, title, summary, url = item.groups()
-
-		if not url.startswith('http'):
+		if url.startswith('rtsp'):
 			oc.add(VideoClipObject(
 				url = '%s%s%d' % ("rtmp", url[4:-1], 3),
 				title = name + " - " + unescape(title),
 				summary = unescape(summary.strip()),
-				thumb = Resource.ContentsOfURLWithFallback(url = icon, fallback=ICON))
+				thumb = R(name.lower() + ".jpg"))
 			)
 
 	return oc
