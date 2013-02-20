@@ -4,15 +4,26 @@
 <dict>
     <key>CFBundleIdentifier</key>
     <string>com.plexapp.plugins.ustvnow</string>
+    <key>PlexClientCapabilities</key>
+    <dict>
+        <key>protocols</key>
+        <array>
+            <string>webkit</string>
+        </array>
+    </dict>
+    <key>PlexClientPlatformExclusions</key>
+    <string>Roku</string>
     <key>PlexClientPlatforms</key>
     <string>*</string>
     <key>PlexFrameworkVersion</key>
     <string>2</string>
-    <key>PlexPluginCodePolicy</key>
-    <string>Elevated</string>
-    <key>PlexFrameworkFlags</key>
+    <key>PlexMediaContainer</key>
     <array>
-        <string>UseRealRTMP</string>
+        <string>Flash</string>
+    </array>
+    <key>PlexPluginRegions</key>
+    <array>
+        <string>US</string>
     </array>
 </dict>
 </plist>

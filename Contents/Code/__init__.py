@@ -5,8 +5,9 @@ TITLE = 'USTVnow'
 ART = 'art-default.jpeg'
 ICON = 'icon-default.png'
 ICON_PREFS = 'icon-prefs.png'
-BASE_URL = 'http://lv2.ustvnow.com'
-IPHONE_URL = '/iphone_ajax?tab=iphone_playingnow&token='
+BASE_URL = "http://www.ustvnow.com?a=do_login&force_redirect=1&manage_proper=1&input_username=%s&input_password=%s#%s"
+IPHONE_BASE_URL = 'http://lv2.ustvnow.com'
+IPHONE_URL = "/iphone_ajax?tab=iphone_playingnow&token=%s"
 
 ####################################################################################################
 def Start():
@@ -34,24 +35,26 @@ def GetChannels():
 	if "token" not in Dict: Login()
 
 	oc = ObjectContainer()
-	page = HTML.ElementFromURL(BASE_URL + IPHONE_URL + Dict['token'])
+	page = HTML.ElementFromURL(IPHONE_BASE_URL + IPHONE_URL % (Dict['token']))
 	feeds = page.xpath("//div[@class='panel']")
 	for feed in feeds:
-		try:
-			url = feed.xpath(".//a[@class='grayButton']")[0].get("href")
+
+		rtsp = feed.xpath(".//a[@class='grayButton']")
+		if len(rtsp) > 0:
 			name = feed.get("title")
+			url = BASE_URL % (Prefs["username"], Prefs["password"], name)
 			title = feed.xpath('.//td[@class="nowplaying_item"]')[0].text
 			summary = feed.xpath('.//td[@class="nowplaying_itemdesc"]')[0].text_content()
+			thumb = R(name.lower() + ".jpg")
 
-			oc.add(CreateLiveTVObject(
-				url = '%s%s%d' % ("rtmp", url[4:-1], 3),
+			oc.add(VideoClipObject(
+				url = url,
 				title = name + " - " + unescape(title),
 				summary = unescape(summary.strip()),
-				thumb = R(name.lower() + ".jpg")
+				art = thumb,
+				thumb = thumb
 			))
 
-		except:
-			continue
 	return oc
 
 ####################################################################################################
@@ -61,40 +64,10 @@ def Login():
 	password = Prefs["password"]
 
 	if (username != None) and (password != None):
-		authentication_url = BASE_URL + '/iphone_login?username=' +  username + '&password=' + password
+		authentication_url = IPHONE_BASE_URL + '/iphone_login?username=' +  username + '&password=' + password
 		response = HTTP.Request(authentication_url, cacheTime=0).content
-		for cookie in HTTP.CookiesForURL(BASE_URL).split(';'):
+		for cookie in HTTP.CookiesForURL(IPHONE_BASE_URL).split(';'):
 			if 'token' in cookie :
 				Dict['token'] = cookie[7:]
 				return True
 	return False
-
-####################################################################################################
-@route('/video/ustvnow/createlivetvobject')
-def CreateLiveTVObject(url, title, summary, thumb, include_container=False):
-
-	sid = url.split('?')[1].split('=')[1]
-	movie_obj = VideoClipObject(
-		key = Callback(CreateLiveTVObject, url=url, title=title, summary=summary, thumb=thumb, include_container=True),
-		rating_key = url,
-		title = title,
-		summary = summary,
-		thumb = thumb,
-		items = [
-			MediaObject(
-				video_codec = VideoCodec.H264,
-				audio_codec = AudioCodec.AAC,
-				audio_channels = 2,
-				parts = [
-					PartObject(
-						key = RTMPVideoURL(url=url, swf_url='http://www.ustvnow.com/player/flowplayer.commercial-3.2.15.swf?sid=' + sid, live=True)
-					)
-				]
-			)
-		]
-	)
-
-	if include_container:
-		return ObjectContainer(objects=[movie_obj])
-	else:
-		return movie_obj

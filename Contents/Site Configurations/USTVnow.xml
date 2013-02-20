@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site site="ustvnow\.com.*"
+	plugin="ustvnow\.com/player/flowplayer\.commercial-3\.2\.15\.swf.*"
+	windowWidth="960"
+	windowHeight="560"
+	initialState="init"
+	version="2.0">
+
+	<crop x="0" y="0" width="0" height="0" />
+
+	<!-- INIT -->
+	<state name="init">
+		<event>
+			<condition>
+                <frameLoaded />
+            </condition>
+			<action>
+				<pause time="3000" />
+				<run script="$('.ui-icon-closethick').trigger('click');" />
+				<run script="eval(document.querySelectorAll('a[title=\'Watch ' + location.hash.split('#')[1] + '\']')[0].getAttribute('onclick').toString().replace('&quot;&quot;', '&quot;2500&quot;'));" />
+			</action>
+		</event>
+	</state>
+</site>
