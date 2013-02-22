@@ -11,5 +11,12 @@
         "label": "Password",
         "default": "",
         "option": "hidden"
+    },
+    {
+        "id": "resolution",
+        "type": "enum",
+        "label": "Resolution",
+        "values": [ "Low", "Med", "High", "HD" ],
+        "default": "HD"
     }
 ]

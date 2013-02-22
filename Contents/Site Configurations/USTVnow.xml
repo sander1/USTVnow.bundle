@@ -16,7 +16,7 @@
             </condition>
 			<action>
 				<run script="$('.ui-icon-closethick').trigger('click');" />
-				<run script="eval(document.querySelectorAll('a[title=\'Watch ' + location.hash.split('#')[1] + '\']')[0].getAttribute('onclick').toString().replace('&quot;&quot;', '&quot;2500&quot;'));" />
+				<run script="eval(document.querySelectorAll('a[title=\'Watch ' + location.hash.split('#')[1].split('/')[0] + '\']')[0].getAttribute('onclick').toString().replace('&quot;&quot;', '&quot;' + location.hash.split('#')[1].split('/')[1] + '&quot;'));" />
 				<pause time="3000" />
 				<run script="var o = document.getElementsByTagName('object')[0]; " />
 				<run script="var width = screen.availWidth;" />

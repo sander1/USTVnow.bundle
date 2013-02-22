@@ -5,9 +5,10 @@ TITLE = 'USTVnow'
 ART = 'art-default.jpeg'
 ICON = 'icon-default.png'
 ICON_PREFS = 'icon-prefs.png'
-BASE_URL = "http://www.ustvnow.com?a=do_login&force_redirect=1&manage_proper=1&input_username=%s&input_password=%s#%s"
+BASE_URL = "http://www.ustvnow.com?a=do_login&force_redirect=1&manage_proper=1&input_username=%s&input_password=%s#%s/%s"
 IPHONE_BASE_URL = 'http://lv2.ustvnow.com'
 IPHONE_URL = "/iphone_ajax?tab=iphone_playingnow&token=%s"
+RESOLUTION = {'Low': 350, 'Med': 650, 'High': 950, 'HD': 2500}
 
 ####################################################################################################
 def Start():
@@ -42,7 +43,7 @@ def GetChannels():
 		rtsp = feed.xpath(".//a[@class='grayButton']")
 		if len(rtsp) > 0:
 			name = feed.get("title")
-			url = BASE_URL % (Prefs["username"], Prefs["password"], name)
+			url = BASE_URL % (Prefs["username"], Prefs["password"], name, RESOLUTION[Prefs["resolution"]])
 			title = feed.xpath('.//td[@class="nowplaying_item"]')[0].text
 			summary = feed.xpath('.//td[@class="nowplaying_itemdesc"]')[0].text_content()
 			thumb = R(name.lower() + ".jpg")
