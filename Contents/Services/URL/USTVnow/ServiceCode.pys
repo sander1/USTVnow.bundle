@@ -1,23 +1,32 @@
 ####################################################################################################
-def NormalizeURL(url):
-
-    return url
-
-####################################################################################################
 def MetadataObjectForURL(url):
 
     return VideoClipObject(
         title = "USTVnow"
     )
 
+
 ####################################################################################################
 def MediaObjectsForURL(url):
 
     return [
         MediaObject(
-            parts = [PartObject(key=WebVideoURL(url))],
+            parts = [PartObject(key=Callback(PlayVideo, url=url))],
             video_codec = VideoCodec.H264,
             audio_codec = AudioCodec.AAC,
             audio_channels = 2
         )
     ]
+
+####################################################################################################
+@indirect
+def PlayVideo(url):
+
+    if url.startswith("rtsp"):
+        url = '%s%s%d' % ("rtmp", url[4:-1], 3)
+        Log(url)
+        sid = url.split('?')[1].split('=')[1]
+        return IndirectResponse(VideoClipObject, key = RTMPVideoURL(url=url, swf_url='http://www.ustvnow.com/player/flowplayer.commercial-3.2.15.swf?sid=' + sid, live=True))
+
+    else:
+        return IndirectResponse(VideoClipObject, key = WebVideoURL(url))

@@ -1,4 +1,3 @@
-import re
 from xml.sax.saxutils import unescape
 
 TITLE = 'USTVnow'
@@ -43,7 +42,12 @@ def GetChannels():
 		rtsp = feed.xpath(".//a[@class='grayButton']")
 		if len(rtsp) > 0:
 			name = feed.get("title")
-			url = BASE_URL % (Prefs["username"], Prefs["password"], name, RESOLUTION[Prefs["resolution"]])
+
+			if Prefs["streamtype"] == "RTMPVideoURL":
+				url = rtsp[0].get("href")
+			else:
+				url = BASE_URL % (Prefs["username"], Prefs["password"], name, RESOLUTION[Prefs["resolution"]])
+
 			title = feed.xpath('.//td[@class="nowplaying_item"]')[0].text
 			summary = feed.xpath('.//td[@class="nowplaying_itemdesc"]')[0].text_content()
 			thumb = R(name.lower() + ".jpg")

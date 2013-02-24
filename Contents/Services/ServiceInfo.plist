@@ -10,8 +10,13 @@
         <key>URLPatterns</key>
         <array>
           <string>http://www.ustvnow.com(.*)</string>
+          <string>(rtmp|rtsp)://lv([0-9]).ustvnow.com(.*)</string>
         </array>
       </dict>
     </dict>
+    <key>PlexFrameworkFlags</key>
+    <array>
+        <string>UseRealRTMP</string>
+    </array>
   </dict>
 </plist>
