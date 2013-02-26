@@ -66,7 +66,7 @@ def Login():
 	password = Prefs["password"]
 
 	if (username != None) and (password != None):
-		HTTP.Request(LOGIN_URL % (username, password), cacheTime=0).content
+		x = HTTP.Request(LOGIN_URL % (username, password), cacheTime=0).content
 		for cookie in HTTP.CookiesForURL(BASE_URL).split(';'):
 			if 'token' in cookie:
 				Dict['token'] = cookie.split("=")[1]
