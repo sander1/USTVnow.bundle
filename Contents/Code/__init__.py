@@ -4,13 +4,17 @@ TITLE = 'USTVnow'
 ART = 'art-default.jpeg'
 ICON = 'icon-default.png'
 ICON_PREFS = 'icon-prefs.png'
-BASE_URL = "http://www.ustvnow.com?a=do_login&force_redirect=1&manage_proper=1&input_username=%s&input_password=%s#%s/%s"
-IPHONE_BASE_URL = 'http://lv2.ustvnow.com'
-IPHONE_URL = "/iphone_ajax?tab=iphone_playingnow&token=%s"
-RESOLUTION = {'Low': 350, 'Med': 650, 'High': 950, 'HD': 2500}
+
+BASE_URL = "http://m.ustvnow.com"
+LOGIN_URL = BASE_URL + "/iphone/1/live/login?username=%s&password=%s"
+MOBILE_URL = BASE_URL + "/iphone/1/live/playingnow?pgonly=true&token=%s"
 
 ####################################################################################################
 def Start():
+
+	HTTP.Headers['User-Agent'] = """"Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us)
+									 AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293
+									 Safari/6531.22.7"""
 
 	ObjectContainer.title1 = TITLE
 	ObjectContainer.art = R(ART)
@@ -32,22 +36,14 @@ def MainMenu():
 @route('/video/ustvnow/getchannels')
 def GetChannels():
 
-	if "token" not in Dict: Login()
-
 	oc = ObjectContainer()
-	page = HTML.ElementFromURL(IPHONE_BASE_URL + IPHONE_URL % (Dict['token']))
-	feeds = page.xpath("//div[@class='panel']")
+	page = HTML.ElementFromURL(MOBILE_URL % (Dict['token']))
+	feeds = page.xpath("//div[contains(@class, 'livetv-content-pages')]")
 	for feed in feeds:
-
-		rtsp = feed.xpath(".//a[@class='grayButton']")
-		if len(rtsp) > 0:
-			name = feed.get("title")
-
-			if Prefs["streamtype"] == "RTMPVideoURL":
-				url = rtsp[0].get("href")
-			else:
-				url = BASE_URL % (Prefs["username"], Prefs["password"], name, RESOLUTION[Prefs["resolution"]])
-
+		url = feed.xpath('.//a[@class="viewlink"]')
+		if len(url) > 0:
+			name = feed.xpath('.//h1')[0].text
+			url = BASE_URL + url[0].get("href")
 			title = feed.xpath('.//td[@class="nowplaying_item"]')[0].text
 			summary = feed.xpath('.//td[@class="nowplaying_itemdesc"]')[0].text_content()
 			thumb = R(name.lower() + ".jpg")
@@ -65,14 +61,14 @@ def GetChannels():
 ####################################################################################################
 def Login():
 
+	Dict['token'] = ""
 	username = Prefs["username"]
 	password = Prefs["password"]
 
 	if (username != None) and (password != None):
-		authentication_url = IPHONE_BASE_URL + '/iphone_login?username=' +  username + '&password=' + password
-		response = HTTP.Request(authentication_url, cacheTime=0).content
-		for cookie in HTTP.CookiesForURL(IPHONE_BASE_URL).split(';'):
-			if 'token' in cookie :
-				Dict['token'] = cookie[7:]
+		HTTP.Request(LOGIN_URL % (username, password), cacheTime=0).content
+		for cookie in HTTP.CookiesForURL(BASE_URL).split(';'):
+			if 'token' in cookie:
+				Dict['token'] = cookie.split("=")[1]
 				return True
 	return False

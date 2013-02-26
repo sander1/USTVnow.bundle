@@ -9,14 +9,9 @@
         <string>com.plexapp.plugins.ustvnow</string>
         <key>URLPatterns</key>
         <array>
-          <string>http://www.ustvnow.com(.*)</string>
-          <string>(rtmp|rtsp)://lv([0-9]).ustvnow.com(.*)</string>
+          <string>http://m.ustvnow.com/iphone/1/live/viewlive(.*)</string>
         </array>
       </dict>
     </dict>
-    <key>PlexFrameworkFlags</key>
-    <array>
-        <string>UseRealRTMP</string>
-    </array>
   </dict>
 </plist>

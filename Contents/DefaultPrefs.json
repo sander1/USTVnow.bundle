@@ -11,19 +11,5 @@
         "label": "Password",
         "default": "",
         "option": "hidden"
-    },
-    {
-        "id": "resolution",
-        "type": "enum",
-        "label": "Resolution",
-        "values": [ "Low", "Med", "High", "HD" ],
-        "default": "HD"
-    },
-    {
-        "id": "streamtype",
-        "type": "enum",
-        "label": "Stream Type",
-        "values": [ "WebVideoURL", "RTMPVideoURL" ],
-        "default": "WebVideoURL"
     }
 ]

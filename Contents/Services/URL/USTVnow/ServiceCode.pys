@@ -9,24 +9,11 @@ def MetadataObjectForURL(url):
 ####################################################################################################
 def MediaObjectsForURL(url):
 
-    return [
-        MediaObject(
-            parts = [PartObject(key=Callback(PlayVideo, url=url))],
-            video_codec = VideoCodec.H264,
-            audio_codec = AudioCodec.AAC,
-            audio_channels = 2
-        )
-    ]
+	video_url = HTML.ElementFromURL(url).xpath("//video")[0].get("src")
+	return [
+		MediaObject(
+			parts = [PartObject(key = HTTPLiveStreamURL(url = video_url))],
+		)
+	]
 
 ####################################################################################################
-@indirect
-def PlayVideo(url):
-
-    if url.startswith("rtsp"):
-        url = '%s%s%d' % ("rtmp", url[4:-1], 3)
-        Log(url)
-        sid = url.split('?')[1].split('=')[1]
-        return IndirectResponse(VideoClipObject, key = RTMPVideoURL(url=url, swf_url='http://www.ustvnow.com/player/flowplayer.commercial-3.2.15.swf?sid=' + sid, live=True))
-
-    else:
-        return IndirectResponse(VideoClipObject, key = WebVideoURL(url))
